@@ -1,91 +1,97 @@
 <!DOCTYPE html>
 <html lang="es">
-<head>
-<meta charset="UTF-8">
-<title>Alerta Violeta Colima</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Alerta Violeta Colima</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-<style>
-body {
-  font-family: Arial;
-  margin: 0;
-  background: #f4f4f4;
-}
+    <style>
+      body {
+        font-family: Arial;
+        margin: 0;
+        background: #f4f4f4;
+      }
 
-header {
-  background: #6a0dad;
-  color: white;
-  padding: 15px;
-  text-align: center;
-  font-size: 22px;
-}
+      header {
+        background: #6a0dad;
+        color: white;
+        padding: 15px;
+        text-align: center;
+        font-size: 22px;
+      }
 
-.container {
-  padding: 20px;
-}
+      .container {
+        padding: 20px;
+      }
 
-.card {
-  background: white;
-  padding: 15px;
-  margin-bottom: 15px;
-  border-radius: 10px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-}
-</style>
-</head>
+      .card {
+        background: white;
+        padding: 15px;
+        margin-bottom: 15px;
+        border-radius: 10px;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+      }
 
-<body>
+      img {
+        width: 100%;
+        max-height: 250px;
+        object-fit: cover;
+        border-radius: 10px;
+        margin-bottom: 10px;
+      }
+    </style>
+  </head>
 
-<header>🚨 Alerta Violeta Colima</header>
+  <body>
+    <header>🚨 Alerta Violeta Colima</header>
 
-<div class="container" id="container">
-Cargando reportes...
-</div>
+    <div class="container" id="container">Cargando reportes...</div>
 
-<script>
-const API = "https://verduzco2.vercel.app/api/report"; // ✅ TU URL
+    <script>
+      const API = "https://verduzco2.vercel.app/api/report";
 
-async function loadReports() {
-  try {
-    const res = await fetch(API);
-    const data = await res.json();
+      async function loadReports() {
+        try {
+          const res = await fetch(API);
+          const data = await res.json();
 
-    const container = document.getElementById("container");
-    container.innerHTML = "";
+          const container = document.getElementById("container");
+          container.innerHTML = "";
 
-    if (!data || data.length === 0) {
-      container.innerHTML = "<p>No hay reportes aún</p>";
-      return;
-    }
+          if (!data || data.length === 0) {
+            container.innerHTML = "<p>No hay reportes aún</p>";
+            return;
+          }
 
-    data.forEach(r => {
-      const div = document.createElement("div");
-      div.className = "card";
+          data.forEach((r) => {
+            const div = document.createElement("div");
+            div.className = "card";
 
-      div.innerHTML = `
+            div.innerHTML = `
         <b>📍 Ubicación:</b> ${r.lat}, ${r.lng}<br>
         <b>📅 Fecha:</b> ${r.fecha}<br><br>
 
+        ${r.foto ? `<img src="data:image/jpeg;base64,${r.foto}">` : ""}
+
         <iframe width="100%" height="200"
-        src="https://maps.google.com/maps?q=${r.lat},${r.lng}&z=15&output=embed">
+        src="https://maps.google.com/maps?q=${r.lat},${
+              r.lng
+            }&z=15&output=embed">
         </iframe>
       `;
 
-      container.appendChild(div);
-    });
+            container.appendChild(div);
+          });
+        } catch (e) {
+          document.getElementById("container").innerHTML =
+            "Error cargando datos";
+        }
+      }
 
-  } catch (e) {
-    document.getElementById("container").innerHTML =
-      "Error cargando datos 😢";
-  }
-}
-
-// 🔥 carga inicial
-loadReports();
-
-// 🔄 refresca cada 5 segundos
-setInterval(loadReports, 5000);
-</script>
-
-</body>
+      window.onload = () => {
+        loadReports();
+        setInterval(loadReports, 5000);
+      };
+    </script>
+  </body>
 </html>
