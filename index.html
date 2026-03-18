@@ -38,6 +38,36 @@ img {
   object-fit: cover;
   border-radius: 10px;
   margin-bottom: 10px;
+  cursor: pointer;
+}
+
+/* 🔥 MODAL */
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 999;
+  padding-top: 50px;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0,0,0,0.9);
+}
+
+.modal img {
+  margin: auto;
+  display: block;
+  max-width: 90%;
+  max-height: 80%;
+}
+
+.modal span {
+  position: absolute;
+  top: 20px;
+  right: 35px;
+  color: white;
+  font-size: 40px;
+  cursor: pointer;
 }
 </style>
 </head>
@@ -50,9 +80,27 @@ img {
 Cargando reportes...
 </div>
 
+<!-- 🔥 MODAL -->
+<div id="imageModal" class="modal">
+  <span onclick="closeModal()">&times;</span>
+  <img id="modalImg">
+</div>
+
 <script>
 const API = "https://verduzco2.vercel.app/api/report";
 
+// 🔥 abrir imagen
+function openModal(src) {
+  document.getElementById("imageModal").style.display = "block";
+  document.getElementById("modalImg").src = src;
+}
+
+// 🔥 cerrar
+function closeModal() {
+  document.getElementById("imageModal").style.display = "none";
+}
+
+// 🔥 cargar datos
 async function loadReports() {
   try {
     const res = await fetch(API);
@@ -76,7 +124,7 @@ async function loadReports() {
 
         ${
           r.foto
-            ? `<img src="data:image/jpeg;base64,${r.foto}">`
+            ? `<img src="data:image/jpeg;base64,${r.foto}" onclick="openModal(this.src)">`
             : ""
         }
 
@@ -95,7 +143,7 @@ async function loadReports() {
   }
 }
 
-// 🔥 cargar y actualizar
+// 🔄 auto refresh
 window.onload = () => {
   loadReports();
   setInterval(loadReports, 5000);
