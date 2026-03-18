@@ -1,25 +1,29 @@
-let reports = [];
+let lastReport = null;
 
 export default function handler(req, res) {
 
-  // 🔥 POST: guardar reporte
+  // 📤 POST
   if (req.method === "POST") {
     const data = req.body;
 
-    console.log("Reporte recibido:", data); // DEBUG
+    console.log("POST recibido:", data);
 
-    reports.push(data);
+    lastReport = data;
 
     return res.status(200).json({
-      message: "Reporte guardado",
-      total: reports.length,
-      data: reports
+      message: "Guardado",
+      data: lastReport
     });
   }
 
-  // 🔥 GET: obtener reportes
+  // 📥 GET
   if (req.method === "GET") {
-    return res.status(200).json(reports);
+
+    if (!lastReport) {
+      return res.status(200).json([]);
+    }
+
+    return res.status(200).json([lastReport]);
   }
 
   res.status(405).json({ message: "Método no permitido" });
