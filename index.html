@@ -95,6 +95,7 @@ select {
   display: block;
   max-width: 90%;
   max-height: 80%;
+  margin-top: 50px;
 }
 
 .modal span {
@@ -167,6 +168,13 @@ function closeModal() {
   document.getElementById("imageModal").style.display = "none";
 }
 
+// 🔥 cerrar al tocar fondo
+document.getElementById("imageModal").addEventListener("click", function(e){
+  if(e.target.id === "imageModal"){
+    closeModal();
+  }
+});
+
 async function loadReports() {
   try {
     const res = await fetch(API);
@@ -191,7 +199,7 @@ async function loadReports() {
 
           ${
             r.foto
-              ? `<img src="data:image/jpeg;base64,${r.foto}" onclick="openModal(this.src)">`
+              ? `<img class="preview" src="data:image/jpeg;base64,${r.foto}">`
               : ""
           }
 
@@ -201,6 +209,15 @@ async function loadReports() {
         `;
 
         container.appendChild(div);
+
+        // 🔥 AQUÍ ESTÁ LA CORRECCIÓN REAL
+        const img = div.querySelector(".preview");
+        if (img) {
+          img.addEventListener("click", () => {
+            openModal(img.src);
+          });
+        }
+
       });
 
   } catch (e) {
