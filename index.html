@@ -11,7 +11,7 @@
             --primary: #7c3aed;
             --background: #f5f3ff;
             --card: #ffffff;
-            --text: #2e1005;
+            --text: #2e1065;
             --border: #e9d5ff;
         }
 
@@ -49,6 +49,17 @@
             transition: transform 0.2s;
         }
 
+        /* 🎨 ESTILO PARA LA DESCRIPCIÓN NUEVA */
+        .descripcion-texto {
+            background: #faf5ff;
+            border-left: 4px solid var(--primary);
+            padding: 10px;
+            margin: 10px 0;
+            font-size: 0.95em;
+            color: #4b5563;
+            border-radius: 4px;
+        }
+
         /* IMÁGENES EN TARJETAS */
         .preview {
             width: 100%;
@@ -72,13 +83,11 @@
 
         /* 🔥 MODAL CORREGIDO */
         #imageModal {
-            display: none; /* Se cambia a flex en JS */
+            display: none; 
             position: fixed;
             z-index: 9999;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
+            left: 0; top: 0;
+            width: 100%; height: 100%;
             background-color: rgba(0, 0, 0, 0.9);
             align-items: center;
             justify-content: center;
@@ -93,12 +102,9 @@
 
         .close-modal {
             position: absolute;
-            top: 20px;
-            right: 30px;
-            color: white;
-            font-size: 40px;
-            font-weight: bold;
-            cursor: pointer;
+            top: 20px; right: 30px;
+            color: white; font-size: 40px;
+            font-weight: bold; cursor: pointer;
             user-select: none;
         }
 
@@ -136,18 +142,17 @@
 </div>
 
 <div id="imageModal">
-    <span class="close-modal" onclick="closeModal()">&times;</span>
+    <span class="close-modal" onclick="closeModal()">×</span>
     <img id="modalImg" src="" alt="Vista ampliada">
 </div>
 
 <script>
     const API = "https://verduzco2.vercel.app/api/report";
 
-    // Funciones del Modal
     function openModal(src) {
         const modal = document.getElementById("imageModal");
         const modalImg = document.getElementById("modalImg");
-        modal.style.display = "flex"; // Usamos flex para centrar
+        modal.style.display = "flex";
         modalImg.src = src;
     }
 
@@ -155,18 +160,14 @@
         document.getElementById("imageModal").style.display = "none";
     }
 
-    // Cerrar al hacer clic fuera de la imagen
     document.getElementById("imageModal").addEventListener("click", function(e) {
-        if (e.target.id === "imageModal") {
-            closeModal();
-        }
+        if (e.target.id === "imageModal") closeModal();
     });
 
     async function loadReports() {
         try {
             const res = await fetch(API);
             const data = await res.json();
-
             const filtro = document.getElementById("filtro").value;
             const container = document.getElementById("container");
 
@@ -174,15 +175,18 @@
 
             data
             .filter(r => filtro === "todos" || r.categoria === filtro)
-            .reverse() // Mostrar los más recientes primero
+            .reverse() 
             .forEach(r => {
                 const div = document.createElement("div");
                 div.className = "card";
 
-                // Construimos el contenido
+                // 1. Imagen (Si existe)
                 let imgHTML = r.foto ? `<img class="preview" src="data:image/jpeg;base64,${r.foto}" onclick="openModal(this.src)">` : "";
                 
-                // Corrección del iframe de Google Maps
+                // 2. 🔥 DESCRIPCIÓN (Si existe)
+                let descHTML = r.descripcion ? `<div class="descripcion-texto"><b>Nota:</b> ${r.descripcion}</div>` : "";
+
+                // 3. Mapa (Corregido el error del 0{)
                 let mapHTML = `<iframe width="100%" height="150" src="https://maps.google.com/maps?q=${r.lat},${r.lng}&z=15&output=embed"></iframe>`;
 
                 div.innerHTML = `
@@ -191,6 +195,7 @@
                         <b style="color:var(--primary)">📍 Ubicación: ${r.lat.toFixed(4)}, ${r.lng.toFixed(4)}</b><br>
                         <b>⚠️ Categoría: ${r.categoria}</b>
                     </div>
+                    ${descHTML}
                     ${imgHTML}
                     ${mapHTML}
                 `;
@@ -204,12 +209,10 @@
         }
     }
 
-    // Eventos
     document.getElementById("filtro").addEventListener("change", loadReports);
 
     window.onload = () => {
         loadReports();
-        // Actualizar cada 10 segundos para no saturar
         setInterval(loadReports, 10000);
     };
 </script>
